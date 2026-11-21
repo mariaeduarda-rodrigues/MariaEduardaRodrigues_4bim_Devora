@@ -34,7 +34,7 @@ O sistema divide-se em duas experiências integradas:
 - **Carrinho e Controle de Estoque:** carrinho persistido no navegador (`localStorage`), bloqueio de quantidades acima do estoque disponível e **aviso visual sempre que o prato possuir 3 unidades ou menos** em estoque.
 - **Cadastro de Clientes:** validação de CPF (11 dígitos), e-mail único, senha criptografada (`bcrypt`) e validação de **data de nascimento** (bloqueando datas futuras e exigindo idade mínima de **16 anos**).
 - **Fechamento e Pagamento (`pagamento.html`):** exige autenticação antes de concluir; carrega automaticamente nome e endereço do cliente, gera **QR Code Pix (BR Code)** com função *Copia e Cola*, valida dados e parcelamento de **Cartão de Crédito/Débito** e oferece pagamento em **Dinheiro**.
-- **Baixa Automática no Estoque:** ao confirmar o pedido, o backend executa uma transação SQL (`BEGIN` / `COMMIT`) que registra o pedido, os itens, o pagamento e subtrai a quantidade comprada diretamente do estoque do prato.
+- **Baixa Automática no Estoque:** ao confirmar o pedido, o backend executa uma transação SQL (`BEGIN` / `COMMIT`) que registra o pedido, os itens (`pedido_has_prato`), o pagamento (`pagamento` e `pagamento_has_forma_pagamento`) e subtrai a quantidade comprada diretamente do estoque do prato.
 
 ### 🔐 Autenticação, Cookies e Recuperação de Senha (`frontend/login/`)
 - **Login em Duas Etapas:** validação prévia do e-mail seguida da verificação de senha.
@@ -43,7 +43,7 @@ O sistema divide-se em duas experiências integradas:
   - Apenas **Cliente** → direcionado para a loja (`cliente.html`).
   - Apenas **Funcionário** → direcionado para o painel administrativo (`admin.html`).
   - **Cliente e Funcionário** → exibe tela de escolha para decidir como deseja acessar.
-- **Recuperação de Senha:** geração de token temporário com validade de 30 minutos (`recuperacao_senha`), permitindo redefinir e salvar a nova senha diretamente na tabela `usuario`.
+- **Recuperação de Senha:** geração de token temporário com validade de 30 minutos (`recuperacao_senha`), permitindo redefinir e salvar a nova senha na tabela `usuario`.
 
 ### 🛠️ Visão Administrativa (`frontend/admin/`, `prato/`, `categoria/`, `medida/`, `usuario/`)
 - **Dashboard Administrativo (`admin.html`):** protegido por middleware (`verificaFuncionarioPagina`), exibe contadores em tempo real de pratos, categorias, medidas e usuários.
@@ -157,26 +157,23 @@ devora/
 - **Script DDL e Carga Inicial:** `guia_gastronomico.sql` (contém `CREATE TABLE`, chaves primárias, chaves estrangeiras, sequences e `INSERT INTO` com carga inicial completa).
 
 ### Tabelas do Sistema
-- `usuario`
-- `categoria`
-- `medida`
-- `forma_pagamento`
-- `cliente`
-- `funcionario`
-- `prato`
-- `pedido`
-- `pagamento`
-- `pedido_has_prato`
-- `pagamento_has_forma_pagamento`
-- `recuperacao_senha`
+- **Entidades principais e independentes:** `usuario`, `categoria`, `medida`, `forma_pagamento`
+- **Especializações / dependentes:** `cliente`, `funcionario`, `prato`, `pedido`, `pagamento`, `recuperacao_senha`
+- **Tabelas associativas (N:M):** `pedido_has_prato`, `pagamento_has_forma_pagamento`
 
-### Principais Relacionamentos
-- **1:N (Categoria → Prato):** uma categoria possui vários pratos; cada prato pertence a uma categoria.
-- **1:N (Medida → Prato):** uma unidade de medida é usada por vários pratos.
-- **1:N (Cliente → Pedido):** um cliente pode realizar vários pedidos.
-- **1:1 (Usuário ↔ Cliente):** um usuário pode possuir um cadastro de cliente.
-- **1:1 (Usuário ↔ Funcionário):** um usuário pode possuir um cadastro de funcionário.
-- **1:1 (Pedido ↔ Pagamento):** cada pedido possui um registro de pagamento associado.
+### Relacionamentos do Modelo (1:1, 1:N e N:M)
+- **Relacionamentos 1:1:**
+  - `usuario` ↔ `cliente` (um usuário pode possuir um perfil de cliente).
+  - `usuario` ↔ `funcionario` (um usuário pode possuir um perfil de funcionário).
+  - `pedido` ↔ `pagamento` (cada pedido possui um pagamento associado).
+- **Relacionamentos 1:N:**
+  - `categoria` → `prato` (uma categoria agrupa vários pratos; cada prato pertence a uma categoria).
+  - `medida` → `prato` (uma unidade de medida é utilizada por vários pratos).
+  - `cliente` → `pedido` (um cliente pode realizar vários pedidos).
+  - `funcionario` → `pedido` (um funcionário pode atender vários pedidos).
+- **Relacionamentos N:M (Tabelas Associativas):**
+  - `pedido` ↔ `prato` por meio da tabela **`pedido_has_prato`** (um pedido pode conter vários pratos e um prato pode estar presente em vários pedidos, registrando `quantidade` e `preco_unitario`).
+  - `pagamento` ↔ `forma_pagamento` por meio da tabela **`pagamento_has_forma_pagamento`** (um pagamento pode ser quitado com uma ou mais formas de pagamento e uma forma de pagamento é usada em vários pagamentos, registrando `valor_pago`).
 
 ### Diagrama Entidade-Relacionamento
 
@@ -242,7 +239,7 @@ Acesse no navegador: **`http://localhost:3000`**
 - [x] Aplicação web funcional baseada na arquitetura Cliente/Servidor e padrão MVC
 - [x] Node.js com separação em Routes e Controllers
 - [x] Conexão com PostgreSQL via variáveis de ambiente (`.env`)
-- [x] Modelagem relacional com tabelas independentes, relacionamentos 1:N e 1:1
+- [x] Modelagem relacional com tabelas independentes, relacionamentos **1:1**, **1:N** e **N:M** (`pedido_has_prato` e `pagamento_has_forma_pagamento`)
 - [x] Script `.sql` com DDL (PK/FK) e carga inicial (mínimo de 10 registros por tabela)
 - [x] Uso de tags HTML5 semânticas (`<header>`, `<nav>`, `<main>`, `<section>`, `<aside>`, `<footer>`) e CSS externo
 - [x] CRUD com cadastro, upload e exibição de imagens
