@@ -1,618 +1,260 @@
-# 🍽️ DEVORA — Guia Gastronômico
+# 🍽️ DEVORA — Guia Gastronômico & Pedidos Online
 
 <p align="center">
-  <strong>Um guia gastronômico para cadastrar, organizar e consultar pratos.</strong>
+  <strong>Sistema web completo para gestão gastronômica, cardápio digital e pedidos online com controle de estoque.</strong>
 </p>
 
 ---
 
-## 📚 Identificação do projeto
+## 📚 Identificação do Projeto
 
-**Projeto:** DEVORA — Guia Gastronômico  
-**Disciplina:** Desenvolvimento Web 1 (DW1)  
-**Ano:** 2026  
-**Aluno:** Maria Eduarda Rodrigues Ferreira  
-**Turma:** M32  
-
----
-
-## 📖 Sobre o projeto
-
-O **DEVORA** é uma aplicação web desenvolvida para a disciplina de **Desenvolvimento Web 1 (DW1)**.
-
-O projeto consiste em um **guia gastronômico**, permitindo o cadastro e a consulta de informações relacionadas a pratos, categorias, medidas e usuários.
-
-A aplicação foi desenvolvida utilizando a arquitetura **Cliente/Servidor**, o padrão **MVC (Model-View-Controller)** e o banco de dados **PostgreSQL**.
+- **Projeto:** DEVORA — Guia Gastronômico
+- **Disciplina:** Desenvolvimento Web 1 (DW1) — 4º Bimestre
+- **Ano:** 2026
+- **Aluna:** Maria Eduarda Rodrigues Ferreira
+- **Turma:** M32
+- **Repositório:** `MariaEduardaRodrigues_4bim_Devora`
 
 ---
 
-## 🎯 Objetivo
+## 📖 Sobre o Projeto
 
-O objetivo do projeto é desenvolver uma aplicação web funcional que coloque em prática os conteúdos estudados na disciplina, incluindo:
+O **DEVORA** é uma aplicação web funcional desenvolvida para a disciplina de **Desenvolvimento Web 1 (DW1)**, estruturada na arquitetura **Cliente/Servidor**, seguindo o padrão **MVC (Model-View-Controller)** e integrada ao banco de dados relacional **PostgreSQL**.
 
-- Arquitetura Cliente/Servidor;
-- Padrão MVC;
-- Desenvolvimento frontend e backend;
-- Criação e utilização de rotas;
-- Controllers;
-- Operações CRUD;
-- Banco de dados PostgreSQL;
-- Relacionamentos entre tabelas;
-- Chaves primárias e estrangeiras;
-- HTML5 semântico;
-- CSS;
-- JavaScript;
-- Git e GitHub.
+O sistema divide-se em duas experiências integradas:
+1. **Visão do Cliente (Loja e Pedidos):** vitrine pública para explorar o cardápio, filtrar por categorias, adicionar pratos ao carrinho com alertas inteligentes de estoque baixo, criar conta, autenticar-se via cookies e finalizar pedidos com escolha de pagamento e baixa automática no estoque.
+2. **Visão Administrativa (Painel Restrito):** dashboard exclusivo para funcionários com resumo quantitativo do sistema e operações CRUD completas de **Pratos** (com upload de imagens), **Categorias**, **Unidades de Medida** e **Usuários** (Clientes e Funcionários).
 
 ---
 
-## 🍕 Funcionalidades
+## 🚀 Funcionalidades Principais
 
-O DEVORA possui páginas para gerenciamento das principais informações do sistema.
+### 🛒 Visão do Cliente (`frontend/cliente/`)
+- **Cardápio Público:** acesso livre sem necessidade de login, com busca por nome e filtro dinâmico por categorias.
+- **Carrinho e Controle de Estoque:** carrinho persistido no navegador (`localStorage`), bloqueio de quantidades acima do estoque disponível e **aviso visual sempre que o prato possuir 3 unidades ou menos** em estoque.
+- **Cadastro de Clientes:** validação de CPF (11 dígitos), e-mail único, senha criptografada (`bcrypt`) e validação de **data de nascimento** (bloqueando datas futuras e exigindo idade mínima de **16 anos**).
+- **Fechamento e Pagamento (`pagamento.html`):** exige autenticação antes de concluir; carrega automaticamente nome e endereço do cliente, gera **QR Code Pix (BR Code)** com função *Copia e Cola*, valida dados e parcelamento de **Cartão de Crédito/Débito** e oferece pagamento em **Dinheiro**.
+- **Baixa Automática no Estoque:** ao confirmar o pedido, o backend executa uma transação SQL (`BEGIN` / `COMMIT`) que registra o pedido, os itens, o pagamento e subtrai a quantidade comprada diretamente do estoque do prato.
 
-### 👨‍🍳 Pratos
+### 🔐 Autenticação, Cookies e Recuperação de Senha (`frontend/login/`)
+- **Login em Duas Etapas:** validação prévia do e-mail seguida da verificação de senha.
+- **Sessão com Cookies:** uso de cookie assinado e `httpOnly` (`usuarioLogado`) gerenciado via `cookie-parser`, com botão de **Sair (Logout)** que encerra a sessão no servidor.
+- **Redirecionamento por Perfil:**
+  - Apenas **Cliente** → direcionado para a loja (`cliente.html`).
+  - Apenas **Funcionário** → direcionado para o painel administrativo (`admin.html`).
+  - **Cliente e Funcionário** → exibe tela de escolha para decidir como deseja acessar.
+- **Recuperação de Senha:** geração de token temporário com validade de 30 minutos (`recuperacao_senha`), permitindo redefinir e salvar a nova senha diretamente na tabela `usuario`.
 
-Permite:
-
-- Cadastrar pratos;
-- Consultar pratos;
-- Alterar pratos;
-- Excluir pratos;
-- Informar estoque;
-- Informar preço;
-- Selecionar medida;
-- Selecionar categoria;
-- Cadastrar e visualizar imagem do prato.
-
-### 🏷️ Categorias
-
-Permite cadastrar, consultar, alterar e excluir categorias gastronômicas.
-
-Categorias utilizadas no projeto:
-
-- Pizzas;
-- Massas;
-- Hambúrgueres;
-- Porções;
-- Salgados;
-- Lanches;
-- Carnes;
-- Acompanhamentos;
-- Pratos Executivos;
-- Risotos;
-- Sobremesas;
-- Bebidas.
-
-### 📏 Medidas
-
-O sistema possui cadastro de unidades de medida utilizadas pelos pratos.
-
-Exemplos:
-
-- UN — Unidade;
-- KG — Quilograma;
-- G — Grama;
-- L — Litro;
-- ML — Mililitro;
-- CX — Caixa;
-- PC — Pacote;
-- DZ — Dúzia;
-- M — Metro;
-- FD — Fardo.
-
-### 👤 Usuários
-
-Permite:
-
-- Cadastrar usuários;
-- Consultar usuários;
-- Alterar usuários;
-- Excluir usuários;
-- Associar um usuário a Cliente;
-- Associar um usuário a Funcionário;
-- Consultar o tipo de usuário.
-
-Um usuário pode ser identificado como:
-
-- Cliente;
-- Funcionário;
-- Cliente e Funcionário.
+### 🛠️ Visão Administrativa (`frontend/admin/`, `prato/`, `categoria/`, `medida/`, `usuario/`)
+- **Dashboard Administrativo (`admin.html`):** protegido por middleware (`verificaFuncionarioPagina`), exibe contadores em tempo real de pratos, categorias, medidas e usuários.
+- **Pratos:** CRUD completo com upload, redimensionamento (`multer` + `sharp`) e exibição de imagens na pasta `imagens/`, além de preço, estoque, categoria e unidade de medida.
+- **Categorias:** CRUD completo das categorias gastronômicas (Pizzas, Massas, Hambúrgueres, Risotos, Sobremesas, Bebidas, entre outras).
+- **Medidas:** CRUD completo das unidades de medida (`UN`, `KG`, `G`, `L`, `ML`, `CX`, `PC`, `DZ`, `M`, `FD`).
+- **Usuários:** CRUD completo com associação 1:1 para **Cliente** (renda e data de cadastro) e/ou **Funcionário** (salário e comissão).
 
 ---
 
-## 🏗️ Arquitetura Cliente/Servidor
+## 🏗️ Arquitetura e Padrão MVC
 
-O projeto utiliza a arquitetura **Cliente/Servidor**.
+### 🖥️ Frontend — View (`frontend/`)
+Construído com **HTML5 semântico** (`<header>`, `<nav>`, `<main>`, `<section>`, `<aside>`, `<footer>`), **CSS3 externo** (identidade visual vinho `#5a1a16` e dourado `#c9a24b`) e **JavaScript** comunicando-se com a API via `fetch`.
 
-### 🖥️ Cliente — Frontend
-
-O frontend é responsável pela interface apresentada ao usuário.
-
-Tecnologias utilizadas:
-
-- HTML5;
-- CSS3;
-- JavaScript.
-
-O frontend envia requisições para o backend através das rotas da aplicação.
-
-### ⚙️ Servidor — Backend
-
-O backend recebe as requisições do frontend, realiza as operações necessárias e se comunica com o banco de dados.
-
-Tecnologias utilizadas:
-
-- Node.js;
-- Express;
-- PostgreSQL.
+### ⚙️ Backend — Routes, Controllers e Middlewares (`backend/`)
+- **Routes (`backend/routes/`):** mapeiam os endpoints da aplicação (`loginRoutes.js`, `pedidoRoutes.js`, `pratoRoutes.js`, `categoriaRoutes.js`, `medidaRoutes.js`, `usuarioRoutes.js`, `clienteRoutes.js`, `funcionarioRoutes.js`).
+- **Controllers (`backend/controllers/`):** concentram as regras de negócio e consultas SQL (`loginController.js`, `recuperacaoController.js`, `pedidoController.js`, `pratoController.js`, `categoriaController.js`, `medidaController.js`, `usuarioController.js`, `clienteController.js`, `funcionarioController.js`).
+- **Middlewares (`backend/middlewares/authMiddleware.js`):** controlam a autenticação e restringem rotas de escrita e páginas administrativas exclusivamente a funcionários logados.
 
 ---
 
-## 🧩 Padrão MVC
-
-A aplicação utiliza o padrão **MVC (Model-View-Controller)** para organizar o projeto.
-
-### 📄 View
-
-Representada pelas páginas HTML, CSS e JavaScript do frontend.
-
-Exemplos:
-
-- `menu.html`;
-- `prato.html`;
-- `categoria.html`;
-- `medida.html`;
-- `usuario.html`.
-
-### 🛣️ Routes
-
-As Routes recebem as requisições e direcionam cada operação para o Controller correspondente.
-
-Exemplos:
-
-- `pratoRoutes.js`;
-- `categoriaRoutes.js`;
-- `medidaRoutes.js`;
-- `usuarioRoutes.js`;
-- `clienteRoutes.js`;
-- `funcionarioRoutes.js`.
-
-### 🧠 Controllers
-
-Os Controllers possuem a lógica das operações realizadas no banco de dados.
-
-Exemplos:
-
-- `pratoController.js`;
-- `categoriaController.js`;
-- `medidaController.js`;
-- `usuarioController.js`;
-- `clienteController.js`;
-- `funcionarioController.js`.
-
-### 🗄️ Banco de dados
-
-A conexão com o PostgreSQL é realizada pelo arquivo:
+## 📂 Estrutura do Projeto
 
 ```text
-backend/database.js
-```
-
----
-
-## 📂 Estrutura do projeto
-
-```text
-guia_gastronomico/
-│
+devora/
 ├── backend/
 │   ├── controllers/
 │   │   ├── categoriaController.js
 │   │   ├── clienteController.js
 │   │   ├── funcionarioController.js
+│   │   ├── loginController.js
 │   │   ├── medidaController.js
+│   │   ├── pedidoController.js
 │   │   ├── pratoController.js
+│   │   ├── recuperacaoController.js
 │   │   └── usuarioController.js
-│   │
+│   ├── middlewares/
+│   │   └── authMiddleware.js
 │   ├── routes/
 │   │   ├── categoriaRoutes.js
 │   │   ├── clienteRoutes.js
 │   │   ├── funcionarioRoutes.js
+│   │   ├── loginRoutes.js
 │   │   ├── medidaRoutes.js
+│   │   ├── pedidoRoutes.js
 │   │   ├── pratoRoutes.js
 │   │   └── usuarioRoutes.js
-│   │
+│   ├── .env
 │   ├── database.js
+│   ├── mailer.js
 │   └── server.js
 │
 ├── frontend/
+│   ├── admin/
+│   │   ├── admin.css
+│   │   ├── admin.html
+│   │   └── admin.js
 │   ├── categoria/
+│   │   ├── categoria.css
+│   │   ├── categoria.html
+│   │   └── categoria.js
+│   ├── cliente/
+│   │   ├── cliente.css
+│   │   ├── cliente.html
+│   │   ├── cliente.js
+│   │   ├── pagamento.css
+│   │   ├── pagamento.html
+│   │   └── pagamento.js
+│   ├── login/
+│   │   ├── esqueci.html
+│   │   ├── login.css
+│   │   ├── login.html
+│   │   ├── login.js
+│   │   ├── recuperar.js
+│   │   └── redefinir.html
 │   ├── medida/
+│   │   ├── medida.css
+│   │   ├── medida.html
+│   │   └── medida.js
 │   ├── menu/
+│   │   ├── menu.css
+│   │   ├── menu.html
+│   │   └── menu.js
 │   ├── prato/
+│   │   ├── prato.css
+│   │   ├── prato.html
+│   │   └── prato.js
 │   └── usuario/
+│       ├── usuario.css
+│       ├── usuario.html
+│       └── usuario.js
 │
 ├── imagens/
+│   └── (imagens dos pratos e silhueta.jpg)
 │
-├── index.html
+├── .gitignore
+├── diagrama.png
 ├── guia_gastronomico.sql
+├── index.html
 ├── package.json
 ├── package-lock.json
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
 ---
 
-## 🗄️ Banco de dados
+## 🗄️ Banco de Dados (PostgreSQL)
 
-O sistema utiliza o **PostgreSQL**.
+- **Banco de dados:** `guia_gastronomico`
+- **Script DDL e Carga Inicial:** `guia_gastronomico.sql` (contém `CREATE TABLE`, chaves primárias, chaves estrangeiras, sequences e `INSERT INTO` com carga inicial completa).
 
-**Banco de dados:**
-
-```text
-guia_gastronomico
-```
-
-### Tabelas
-
-O banco possui as seguintes tabelas:
-
+### Tabelas do Sistema
 - `usuario`
 - `categoria`
 - `medida`
-- `prato`
+- `forma_pagamento`
 - `cliente`
 - `funcionario`
+- `prato`
 - `pedido`
 - `pagamento`
-- `forma_pagamento`
 - `pedido_has_prato`
 - `pagamento_has_forma_pagamento`
+- `recuperacao_senha`
+
+### Principais Relacionamentos
+- **1:N (Categoria → Prato):** uma categoria possui vários pratos; cada prato pertence a uma categoria.
+- **1:N (Medida → Prato):** uma unidade de medida é usada por vários pratos.
+- **1:N (Cliente → Pedido):** um cliente pode realizar vários pedidos.
+- **1:1 (Usuário ↔ Cliente):** um usuário pode possuir um cadastro de cliente.
+- **1:1 (Usuário ↔ Funcionário):** um usuário pode possuir um cadastro de funcionário.
+- **1:1 (Pedido ↔ Pagamento):** cada pedido possui um registro de pagamento associado.
+
+### Diagrama Entidade-Relacionamento
+
+![Diagrama do banco de dados](./diagrama.png)
 
 ---
 
-## 🔗 Relacionamentos do banco
+## 💻 Tecnologias Utilizadas
 
-O banco possui diferentes tipos de relacionamentos.
-
-### 1:N — Medida e Prato
-
-Uma medida pode ser utilizada por vários pratos, enquanto cada prato possui uma medida.
-
-```text
-medida
-   │
-   └──< prato
-```
-
-### 1:N — Categoria e Prato
-
-Uma categoria pode possuir vários pratos.
-
-```text
-categoria
-   │
-   └──< prato
-```
-
-### 1:1 — Usuário e Cliente
-
-Um usuário pode possuir no máximo um cadastro de cliente.
-
-```text
-usuario ─── cliente
-```
-
-### 1:1 — Usuário e Funcionário
-
-Um usuário pode possuir no máximo um cadastro de funcionário.
-
-```text
-usuario ─── funcionario
-```
-
-As relações são implementadas através de **chaves primárias e estrangeiras**.
+| Tecnologia | Finalidade |
+| :--- | :--- |
+| **HTML5 & CSS3** | Estrutura semântica e estilização responsiva das interfaces |
+| **JavaScript (ES6+)** | Interatividade do frontend, validações, carrinho e consumo de API |
+| **Node.js & Express** | Servidor web, rotas REST e middlewares de autenticação |
+| **PostgreSQL (`pg`)** | Banco de dados relacional e transações SQL |
+| **Cookie-Parser & Bcrypt** | Sessão segura com cookies assinados e hash de senhas |
+| **Multer & Sharp** | Upload e processamento de imagens dos pratos |
+| **Dotenv & Cors** | Gerenciamento de variáveis de ambiente e requisições |
+| **Git & GitHub** | Controle de versão e hospedagem do repositório |
 
 ---
 
-## 🔑 Chaves primárias e estrangeiras
-
-O banco utiliza chaves primárias para identificar os registros e chaves estrangeiras para estabelecer os relacionamentos entre as tabelas.
-
-Exemplos:
-
-```text
-usuario.cpf_usuario
-categoria.id_categoria
-medida.id_medida
-prato.id_prato
-```
-
-As tabelas relacionadas utilizam chaves estrangeiras para fazer referência aos registros correspondentes.
-
----
-
-## 🔄 Operações CRUD
-
-O sistema utiliza as quatro operações básicas de um CRUD:
-
-| Operação | Função |
-|---|---|
-| CREATE | Cadastrar |
-| READ | Consultar |
-| UPDATE | Alterar |
-| DELETE | Excluir |
-
-As operações são realizadas através das rotas do backend e executadas no banco de dados PostgreSQL.
-
----
-
-## 🖼️ Cadastro de imagens
-
-O sistema possui uma funcionalidade de cadastro de imagens para os pratos.
-
-As imagens são armazenadas na pasta:
-
-```text
-imagens/
-```
-
-Ao cadastrar ou alterar um prato, é possível selecionar uma imagem através da interface.
-
-O backend recebe o arquivo enviado pelo frontend e realiza o processamento e armazenamento da imagem.
-
----
-
-## 🌐 Páginas da aplicação
-
-O projeto possui páginas interligadas através do menu de navegação.
-
-### Página inicial
-
-```text
-index.html
-```
-
-Redireciona para o menu principal do DEVORA.
-
-### Menu
-
-```text
-frontend/menu/menu.html
-```
-
-Página principal de navegação da aplicação.
-
-### Pratos
-
-```text
-frontend/prato/prato.html
-```
-
-Gerenciamento dos pratos.
-
-### Categorias
-
-```text
-frontend/categoria/categoria.html
-```
-
-Gerenciamento das categorias.
-
-### Medidas
-
-```text
-frontend/medida/medida.html
-```
-
-Gerenciamento das unidades de medida.
-
-### Usuários
-
-```text
-frontend/usuario/usuario.html
-```
-
-Gerenciamento dos usuários, clientes e funcionários.
-
----
-
-## 💻 Tecnologias utilizadas
-
-| Tecnologia | Utilização |
-|---|---|
-| HTML5 | Estrutura das páginas |
-| CSS3 | Estilização |
-| JavaScript | Funcionalidades do frontend |
-| Node.js | Desenvolvimento do backend |
-| Express | Servidor e criação das rotas |
-| PostgreSQL | Banco de dados |
-| Git | Controle de versão |
-| GitHub | Hospedagem do repositório |
-
----
-
-## 🧱 HTML5 semântico
-
-As páginas do projeto utilizam elementos semânticos do HTML5, como:
-
-```html
-<header>
-<nav>
-<main>
-<section>
-<aside>
-<footer>
-```
-
-Esses elementos ajudam a organizar semanticamente a estrutura das páginas.
-
----
-
-## 🗃️ Arquivo SQL
-
-O arquivo responsável pela criação e carga inicial do banco é:
-
-```text
-guia_gastronomico.sql
-```
-
-Ele contém:
-
-- Criação das tabelas;
-- Criação das sequences;
-- Chaves primárias;
-- Chaves estrangeiras;
-- Dados iniciais;
-- Relacionamentos entre as tabelas.
-
----
-
-## 🚀 Como executar o projeto
+## ⚙️ Como Executar o Projeto Localmente
 
 ### 1. Clonar o repositório
-
 ```bash
-git clone URL_DO_REPOSITORIO
-```
-
-Depois, entre na pasta:
-
-```bash
-cd guia_gastronomico
+git clone [https://github.com/mariaeduarda-rodrigues/MariaEduardaRodrigues_4bim_Devora.git](https://github.com/mariaeduarda-rodrigues/MariaEduardaRodrigues_4bim_Devora.git)
+cd MariaEduardaRodrigues_4bim_Devora
 ```
 
 ### 2. Instalar as dependências
-
-No terminal:
-
 ```bash
 npm install
 ```
 
-### 3. Criar o banco de dados
-
-No PostgreSQL, crie o banco:
-
-```text
-guia_gastronomico
-```
-
-Depois execute o arquivo:
-
-```text
-guia_gastronomico.sql
-```
+### 3. Configurar o banco de dados PostgreSQL
+1. Crie um banco de dados chamado **`guia_gastronomico`** no PostgreSQL (pgAdmin ou terminal `psql`).
+2. Execute o script **`guia_gastronomico.sql`** para criar todas as tabelas, relacionamentos e dados iniciais.
 
 ### 4. Configurar o arquivo `.env`
-
-Crie um arquivo `.env` dentro da pasta `backend`:
+Crie um arquivo `.env` dentro da pasta `backend/` com as credenciais do seu PostgreSQL:
 
 ```env
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=guia_gastronomico
 DB_USER=postgres
 DB_PASSWORD=SUA_SENHA
+DB_NAME=guia_gastronomico
 PORT=3000
 ```
 
-Substitua `SUA_SENHA` pela senha utilizada no PostgreSQL.
-
 ### 5. Iniciar o servidor
-
-Execute:
-
 ```bash
 node backend/server.js
 ```
 
-O servidor será executado na porta:
-
-```text
-3000
-```
-
-A aplicação poderá ser acessada em:
-
-```text
-http://localhost:3000
-```
+Acesse no navegador: **`http://localhost:3000`**
 
 ---
 
-## 🔐 Arquivo .gitignore
+## 📋 Checklist de Requisitos Atendidos
 
-O projeto utiliza `.gitignore` para impedir o envio de arquivos que não devem ser versionados.
-
-Exemplo:
-
-```text
-node_modules/
-.env
-```
-
-O arquivo `.env` não deve ser enviado ao GitHub, pois contém informações de configuração do banco de dados.
-
----
-
-## 🐙 Git e GitHub
-
-O projeto utiliza **Git** para controle de versão e **GitHub** para armazenamento do repositório.
-
-O repositório segue o padrão solicitado para a atividade:
-
-```text
-MariaEduardaRodrigues_3bim_GuiaGastronomico
-```
+- [x] Aplicação web funcional baseada na arquitetura Cliente/Servidor e padrão MVC
+- [x] Node.js com separação em Routes e Controllers
+- [x] Conexão com PostgreSQL via variáveis de ambiente (`.env`)
+- [x] Modelagem relacional com tabelas independentes, relacionamentos 1:N e 1:1
+- [x] Script `.sql` com DDL (PK/FK) e carga inicial (mínimo de 10 registros por tabela)
+- [x] Uso de tags HTML5 semânticas (`<header>`, `<nav>`, `<main>`, `<section>`, `<aside>`, `<footer>`) e CSS externo
+- [x] CRUD com cadastro, upload e exibição de imagens
+- [x] Sistema de login/logout com uso de cookies e redirecionamento por perfil
+- [x] Visão do cliente (cardápio, carrinho, regras de negócio e checkout) e visão administrativa (dashboard e CRUDs)
+- [x] `.gitignore` configurando exclusão de `node_modules/` e `.env`
+- [x] `README.md` completo com diagrama do banco de dados
 
 ---
 
-## 📊 Diagrama do banco de dados
+## 👩‍💻 Autoria
 
-O diagrama abaixo apresenta as tabelas, chaves primárias, chaves estrangeiras e os principais relacionamentos do banco de dados do DEVORA.
-
-![Diagrama do banco de dados](./diagrama.png)
-
-## 📋 Requisitos da atividade
-
-O projeto foi desenvolvido considerando os requisitos propostos para a atividade:
-
-- [x] Aplicação web funcional;
-- [x] Arquitetura Cliente/Servidor;
-- [x] Padrão MVC;
-- [x] Node.js;
-- [x] Express;
-- [x] PostgreSQL;
-- [x] HTML5 semântico;
-- [x] CSS externo;
-- [x] JavaScript;
-- [x] Mínimo de quatro páginas interligadas;
-- [x] Integração com banco de dados;
-- [x] Operações CRUD;
-- [x] Cadastro e exibição de imagem;
-- [x] Chaves primárias;
-- [x] Chaves estrangeiras;
-- [x] Relacionamentos entre tabelas;
-- [x] Dados iniciais no banco;
-- [x] `.gitignore`;
-- [x] README.md;
-- [x] Diagrama do banco de dados inserido no README;
-- [x] Adicionar o professor como colaborador do repositório.
-
----
-
-## 👩‍💻 Desenvolvimento
-
-**Desenvolvido por:** Maria Eduarda Rodrigues Ferreira
-
-**Turma:** M32  
-**Disciplina:** Desenvolvimento Web 1 (DW1)  
-**Ano:** 2026
-
----
-
-# 🍽️ DEVORA
-
-### Explore. Escolha. Devore.
+**Maria Eduarda Rodrigues Ferreira**  
+Turma **M32** — Desenvolvimento Web 1 (DW1) — **2026**  
+*DEVORA — Uma boa experiência começa à mesa.*
