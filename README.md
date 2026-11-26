@@ -36,14 +36,14 @@ O sistema divide-se em duas experiências integradas:
 - **Fechamento e Pagamento (`pagamento.html`):** exige autenticação antes de concluir; carrega automaticamente nome e endereço do cliente, gera **QR Code Pix (BR Code)** com função *Copia e Cola*, valida dados e parcelamento de **Cartão de Crédito/Débito** e oferece pagamento em **Dinheiro**.
 - **Baixa Automática no Estoque:** ao confirmar o pedido, o backend executa uma transação SQL (`BEGIN` / `COMMIT`) que registra o pedido, os itens (`pedido_has_prato`), o pagamento (`pagamento` e `pagamento_has_forma_pagamento`) e subtrai a quantidade comprada diretamente do estoque do prato.
 
-### 🔐 Autenticação, Cookies e Recuperação de Senha (`frontend/login/`)
+### 🔐 Autenticação, Cookies e Redefinição de Senha (`frontend/login/`)
 - **Login em Duas Etapas:** validação prévia do e-mail seguida da verificação de senha.
 - **Sessão com Cookies:** uso de cookie assinado e `httpOnly` (`usuarioLogado`) gerenciado via `cookie-parser`, com botão de **Sair (Logout)** que encerra a sessão no servidor.
 - **Redirecionamento por Perfil:**
   - Apenas **Cliente** → direcionado para a loja (`cliente.html`).
   - Apenas **Funcionário** → direcionado para o painel administrativo (`admin.html`).
   - **Cliente e Funcionário** → exibe tela de escolha para decidir como deseja acessar.
-- **Recuperação de Senha:** geração de token temporário com validade de 30 minutos (`recuperacao_senha`), permitindo redefinir e salvar a nova senha na tabela `usuario`.
+- **Recuperação de Senha:** fluxo integrado diretamente na tela de login por meio de token temporário com validade de 30 minutos (`recuperacao_senha`), permitindo redefinir e salvar a nova senha na tabela `usuario`.
 
 ### 🛠️ Visão Administrativa (`frontend/admin/`, `prato/`, `categoria/`, `medida/`, `usuario/`)
 - **Dashboard Administrativo (`admin.html`):** protegido por middleware (`verificaFuncionarioPagina`), exibe contadores em tempo real de pratos, categorias, medidas e usuários.
@@ -114,20 +114,13 @@ devora/
 │   │   ├── pagamento.html
 │   │   └── pagamento.js
 │   ├── login/
-│   │   ├── esqueci.html
 │   │   ├── login.css
 │   │   ├── login.html
-│   │   ├── login.js
-│   │   ├── recuperar.js
-│   │   └── redefinir.html
+│   │   └── login.js
 │   ├── medida/
 │   │   ├── medida.css
 │   │   ├── medida.html
 │   │   └── medida.js
-│   ├── menu/
-│   │   ├── menu.css
-│   │   ├── menu.html
-│   │   └── menu.js
 │   ├── prato/
 │   │   ├── prato.css
 │   │   ├── prato.html
@@ -139,6 +132,9 @@ devora/
 │
 ├── imagens/
 │   └── (imagens dos pratos e silhueta.jpg)
+│
+├── wireframes/
+│   └── (protótipos das telas e fluxo de navegação)
 │
 ├── .gitignore
 ├── diagrama.png

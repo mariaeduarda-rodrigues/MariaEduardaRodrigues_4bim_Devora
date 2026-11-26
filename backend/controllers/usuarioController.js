@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const { query } = require('../database');
 const path = require('path');
 
@@ -13,7 +14,6 @@ exports.listarUsuarios = async (req, res) => {
                 u.nome_usuario,
                 u.data_nascimento_usuario,
                 u.endereco_usuario,
-                u.senha_usuario,
                 u.email_usuario,
                 CASE
                     WHEN c.usuario_cpf_usuario IS NOT NULL
@@ -64,17 +64,26 @@ exports.criarUsuario = async (req, res) => {
             });
         }
 
+        if (String(senha_usuario).length < 6) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'A senha deve ter pelo menos 6 caracteres'
+            });
+        }
+
+        const senhaHash = await bcrypt.hash(String(senha_usuario), 10);
+
         const result = await query(`
             INSERT INTO usuario
             (cpf_usuario, nome_usuario, data_nascimento_usuario, endereco_usuario, senha_usuario, email_usuario)
             VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *
+            RETURNING cpf_usuario, nome_usuario, data_nascimento_usuario, endereco_usuario, email_usuario
         `, [
             cpf_usuario,
             nome_usuario,
             data_nascimento_usuario,
             endereco_usuario,
-            senha_usuario,
+            senhaHash,
             email_usuario
         ]);
 
@@ -105,10 +114,15 @@ exports.obterUsuario = async (req, res) => {
         const id = req.params.id;
 
         const result = await query(`
-            SELECT *
+            SELECT
+                cpf_usuario,
+                nome_usuario,
+                data_nascimento_usuario,
+                endereco_usuario,
+                email_usuario
             FROM usuario
             WHERE cpf_usuario = $1
-        `, [id]);
+        `, [id]);  
 
         if (result.rows.length === 0) {
             return res.status(404).json({
@@ -140,7 +154,6 @@ exports.atualizarUsuario = async (req, res) => {
             nome_usuario,
             data_nascimento_usuario,
             endereco_usuario,
-            senha_usuario,
             email_usuario
         } = req.body;
 
@@ -149,15 +162,13 @@ exports.atualizarUsuario = async (req, res) => {
             SET nome_usuario = $1,
                 data_nascimento_usuario = $2,
                 endereco_usuario = $3,
-                senha_usuario = $4,
-                email_usuario = $5
-            WHERE cpf_usuario = $6
+                email_usuario = $4
+            WHERE cpf_usuario = $5
             RETURNING *
         `, [
             nome_usuario,
             data_nascimento_usuario,
             endereco_usuario,
-            senha_usuario,
             email_usuario,
             id
         ]);

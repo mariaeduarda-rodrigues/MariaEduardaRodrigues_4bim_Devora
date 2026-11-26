@@ -13,6 +13,8 @@ const btnCancelar = document.getElementById('btnCancelar');
 const btnSalvar = document.getElementById('btnSalvar');
 const usuariosTableBody = document.getElementById('usuariosTableBody');
 const messageContainer = document.getElementById('messageContainer');
+const inputSenha = document.getElementById('senha_usuario');
+const avisoSenha = document.getElementById('avisoSenhaUsuario');
 
 // Carregar lista de usuarios e popular menu de categoria ao inicializar
 document.addEventListener('DOMContentLoaded', () => {
@@ -50,6 +52,9 @@ function bloquearCampos(bloquearPrimeiro) {
 
 function limparFormulario() {
     form.reset();
+    inputSenha.value = '';
+    inputSenha.placeholder = 'Mínimo de 6 caracteres';
+    if (avisoSenha) avisoSenha.textContent = '';
 
     document.getElementById('checkboxFuncionario').checked = false;
     document.getElementById('salario_funcionario').value = '';
@@ -178,7 +183,11 @@ async function preencherFormulario(usuario) {
         document.getElementById('data_nascimento').value = '';
     }
     document.getElementById('endereco_usuario').value = usuario.endereco_usuario || '';
-    document.getElementById('senha_usuario').value = usuario.senha_usuario || '';
+   inputSenha.value = '';
+   inputSenha.placeholder = 'Senha criptografada (apenas o usuário altera)';
+    if (avisoSenha) {
+        avisoSenha.textContent = '🔒 Senha protegida por criptografia. O administrador não pode visualizá-la nem alterá-la.';
+    }
     document.getElementById('email_usuario').value = usuario.email_usuario || '';
 
     // Verifica funcionário
@@ -212,6 +221,12 @@ async function incluirUsuario() {
     limparFormulario();
     searchId.value = currentPersonId;
     bloquearCampos(true);
+    inputSenha.disabled = false;
+    inputSenha.required = true;
+    inputSenha.placeholder = 'Mínimo de 6 caracteres';
+    if (avisoSenha) {
+        avisoSenha.textContent = '🔐 A senha inicial será criptografada automaticamente ao salvar.';
+    }
     mostrarBotoes(false, false, false, false, true, true);
     document.getElementById('nome_usuario').focus();
     operacao = 'incluir';
@@ -230,6 +245,13 @@ async function excluirUsuario() {
     currentPersonId = searchId.value;
     searchId.disabled = true;
     bloquearCampos(false);
+    inputSenha.value = '';
+    inputSenha.disabled = true;
+    inputSenha.required = false;
+    inputSenha.placeholder = 'Bloqueado (somente o usuário pode alterar)';
+    if (avisoSenha) {
+        avisoSenha.textContent = '🔒 O administrador não tem permissão para alterar a senha do usuário.';
+    }
     mostrarBotoes(false, false, false, false, true, true);
     operacao = 'excluir';
 }
@@ -242,9 +264,12 @@ async function salvarOperacao() {
         { id: 'nome_usuario', nome: 'Nome' },
         { id: 'data_nascimento', nome: 'Data de Nascimento' },
         { id: 'endereco_usuario', nome: 'Endereço' },
-        { id: 'senha_usuario', nome: 'Senha' },
         { id: 'email_usuario', nome: 'Email' }
     ];
+
+    if (operacao === 'incluir') {
+        camposObrigatorios.push({ id: 'senha_usuario', nome: 'Senha' });
+    }
 
     for (const campo of camposObrigatorios) {
         const elemento = document.getElementById(campo.id);
@@ -255,6 +280,15 @@ async function salvarOperacao() {
             return;
         }
     }
+
+    if (operacao === 'incluir' && inputSenha.value.length < 6) {
+        mostrarMensagem('A senha deve ter pelo menos 6 caracteres!', 'warning');
+        inputSenha.focus();
+        return;
+    }
+
+    for (const campo of camposObrigatorios) {
+        const elemento = document.getElementById(campo.id);}
 
     // 2. VERIFICA OS CHECKBOXES
     const funcionarioMarcado = document.getElementById('checkboxFuncionario').checked;
@@ -343,9 +377,12 @@ if (dataNascimento > hoje) {
         nome_usuario: formData.get('nome_usuario'),
         data_nascimento_usuario: converterDataParaISO(formData.get('data_nascimento')) || null,
         endereco_usuario: formData.get('endereco_usuario'),
-        senha_usuario: formData.get('senha_usuario'),
         email_usuario: formData.get('email_usuario')
     };
+
+    if (operacao === 'incluir') {
+        usuario.senha_usuario = inputSenha.value;
+    }
 
     let funcionario = null;
     if (document.getElementById('checkboxFuncionario').checked) {
@@ -540,7 +577,6 @@ function renderizarTabelaUsuarios(usuarios) {
             <td>${usuario.nome_usuario}</td>
             <td>${formatarData(usuario.data_nascimento_usuario)}</td>
             <td>${usuario.endereco_usuario}</td>
-            <td>${usuario.senha_usuario}</td>
             <td>${usuario.email_usuario}</td>
             <td>${usuario.tipo_usuario}</td>
         `;

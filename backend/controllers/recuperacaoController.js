@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { query } = require('../database');
 const { enviarEmail } = require('../mailer');
@@ -108,9 +109,10 @@ exports.redefinirSenha = async (req, res) => {
         }
 
         const cpf = r.rows[0].usuario_cpf_usuario;
+        const senhaHash = await bcrypt.hash(novaSenha, 10);
 
-        // Salva a nova senha diretamente na tabela usuario
-        await query('UPDATE usuario SET senha_usuario = $1 WHERE cpf_usuario = $2', [novaSenha, cpf]);
+        // Salva a nova senha criptografada na tabela usuario
+        await query('UPDATE usuario SET senha_usuario = $1 WHERE cpf_usuario = $2', [senhaHash, cpf]);
         await query('DELETE FROM recuperacao_senha WHERE usuario_cpf_usuario = $1', [cpf]);
 
         res.json({ status: 'ok', mensagem: 'Senha alterada com sucesso!' });
