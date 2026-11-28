@@ -348,7 +348,7 @@ formPagamento.addEventListener('submit', async e => {
     mostrarMensagem(`Pedido #${dados.id_pedido} confirmado com sucesso! Redirecionando...`, 'sucesso');
 
     setTimeout(() => {
-      window.location.href = 'cliente.html';
+      window.location.href = 'meus-pedidos.html';
     }, 2200);
 
   } catch {

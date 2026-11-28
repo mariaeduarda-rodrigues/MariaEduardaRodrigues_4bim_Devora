@@ -99,7 +99,6 @@ function irParaLogin(voltarAoCarrinho) {
     (voltarAoCarrinho ? '?voltar=carrinho' : '');
 }
 
-// Exibe o aviso sempre que adicionar um prato com estoque baixo (<= 3)
 function avisarEstoque(texto, limiteAtingido = false) {
   let aviso = document.getElementById('avisoEstoqueToast');
 
@@ -341,48 +340,43 @@ function renderizarCarrinho() {
 }
 
 document.getElementById('abrirLogin')
-  .addEventListener('click', () => irParaLogin());
+  ?.addEventListener('click', () => irParaLogin());
 
 document.getElementById('abrirCadastro')
-  .addEventListener('click', () => abrirModal());
-
-document.getElementById('loginPedidos')
-  .addEventListener('click', () => irParaLogin());
-
-document.getElementById('criarContaFaixa')
-  .addEventListener('click', () => abrirModal());
+  ?.addEventListener('click', () => abrirModal());
 
 document.getElementById('fecharModal')
-  .addEventListener('click', fecharModal);
+  ?.addEventListener('click', fecharModal);
 
-modal.addEventListener('click', e => {
+modal?.addEventListener('click', e => {
   if (e.target === modal) fecharModal();
 });
 
 document.getElementById('irCarrinho')
-  .addEventListener('click', () => {
+  ?.addEventListener('click', () => {
     document.getElementById('carrinho').scrollIntoView({
       behavior: 'smooth'
     });
   });
 
-busca.addEventListener('input', renderizarPratos);
+busca?.addEventListener('input', renderizarPratos);
 
 // ===== Sessão (cookie "usuarioLogado") =====
 let sessao = { status: 'nao_logado' };
 
 function atualizarTopo() {
   const logado = sessao.status === 'ok';
-  document.getElementById('abrirLogin').classList.toggle('oculto', logado);
-  document.getElementById('abrirCadastro').classList.toggle('oculto', logado);
-  document.getElementById('loginPedidos').classList.toggle('oculto', logado);
-  document.getElementById('btnSair').classList.toggle('oculto', !logado);
-  document.getElementById('linkAdmin').classList.toggle(
+  document.getElementById('abrirLogin')?.classList.toggle('oculto', logado);
+  document.getElementById('abrirCadastro')?.classList.toggle('oculto', logado);
+  document.getElementById('btnSair')?.classList.toggle('oculto', !logado);
+  document.getElementById('linkAdmin')?.classList.toggle(
     'oculto', !(logado && sessao.papeis && sessao.papeis.funcionario)
   );
   const saudacao = document.getElementById('saudacao');
-  saudacao.classList.toggle('oculto', !logado);
-  saudacao.textContent = logado ? 'Olá, ' + String(sessao.nome || '').split(' ')[0] : '';
+  if (saudacao) {
+    saudacao.classList.toggle('oculto', !logado);
+    saudacao.textContent = logado ? 'Olá, ' + String(sessao.nome || '').split(' ')[0] : '';
+  }
 }
 
 async function carregarSessao() {
@@ -396,7 +390,7 @@ async function carregarSessao() {
 }
 
 // Cadastro: cria usuario + cliente e já deixa a pessoa logada
-formCadastro.addEventListener('submit', async e => {
+formCadastro?.addEventListener('submit', async e => {
   e.preventDefault();
 
   const dadosForm = Object.fromEntries(new FormData(formCadastro));
@@ -431,15 +425,14 @@ formCadastro.addEventListener('submit', async e => {
   }
 });
 
-document.getElementById('btnSair').addEventListener('click', async () => {
+document.getElementById('btnSair')?.addEventListener('click', async () => {
   await fetch('/login/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
   sessao = { status: 'nao_logado' };
   atualizarTopo();
 });
 
-// Botão de pagamento: se não estiver logado, vai para a tela de login
 document.getElementById('finalizarPedido')
-  .addEventListener('click', () => {
+  ?.addEventListener('click', () => {
     if (sessao.status !== 'ok') {
       irParaLogin(true);
       return;

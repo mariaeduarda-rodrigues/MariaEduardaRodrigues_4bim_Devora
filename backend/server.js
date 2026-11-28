@@ -33,7 +33,7 @@ app.use(['/backend', '/guia_gastronomico.sql'], (req, res) => res.status(404).en
 // Telas de administração: só funcionário logado acessa
 app.use(
   ['/frontend/admin', '/frontend/usuario', '/frontend/prato',
-   '/frontend/categoria', '/frontend/medida', '/frontend/funcionario'],
+   '/frontend/categoria', '/frontend/medida', '/frontend/funcionario', '/frontend/pedido'],
   verificaFuncionarioPagina
 );
 

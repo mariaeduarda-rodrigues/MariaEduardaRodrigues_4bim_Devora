@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const pedidoController = require('../controllers/pedidoController');
-const { verificaAutenticacao } = require('../middlewares/authMiddleware');
+const { verificaFuncionarioApi } = require('../middlewares/authMiddleware');
 
-router.get('/dadosCliente', verificaAutenticacao, pedidoController.dadosCliente);
-router.post('/finalizar', verificaAutenticacao, pedidoController.finalizarPedido);
+router.get('/dadosCliente', pedidoController.dadosCliente);
+router.post('/finalizar', pedidoController.finalizarPedido);
+router.get('/meusPedidos', pedidoController.meusPedidos);
+router.get('/', verificaFuncionarioApi, pedidoController.listarPedidos);
 
 module.exports = router;

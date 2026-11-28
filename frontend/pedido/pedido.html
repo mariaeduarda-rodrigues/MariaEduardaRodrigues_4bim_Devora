@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEVORA - Pedidos dos Clientes</title>
+    <link rel="stylesheet" href="../prato/prato.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>🧾 DEVORA — Pedidos</h1>
+        <p>Histórico geral de pedidos realizados pelos clientes</p>
+        <nav>
+            <a href="../admin/admin.html">Início</a>
+            <a href="../prato/prato.html">Pratos</a>
+            <a href="../categoria/categoria.html">Categorias</a>
+            <a href="../medida/medida.html">Medidas</a>
+            <a href="../usuario/usuario.html">Usuários</a>
+            <a href="pedido.html">Pedidos</a>
+            
+        </nav>
+    </header>
+
+    <main class="container-master" style="grid-template-columns: 1fr;">
+        <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                <h2>Todos os pedidos registrados</h2>
+                <input type="search" id="buscaPedidoAdmin" placeholder="Buscar por cliente, CPF ou #pedido..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid #ccc; min-width: 260px;">
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #ddd;">
+                            <th style="padding: 12px 10px;"># Pedido</th>
+                            <th style="padding: 12px 10px;">Data</th>
+                            <th style="padding: 12px 10px;">Cliente</th>
+                            <th style="padding: 12px 10px;">Itens pedidos</th>
+                            <th style="padding: 12px 10px;">Pagamento</th>
+                            <th style="padding: 12px 10px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaTodosPedidos">
+                        <tr><td colspan="6" style="padding: 14px;">Carregando pedidos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Maria Eduarda Rodrigues Ferreira — Turma M32 — 2026</p>
+    </footer>
+
+    <script src="pedido.js"></script>
+</body>
+</html>

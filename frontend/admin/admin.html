@@ -17,6 +17,7 @@
             <a href="../categoria/categoria.html">Categorias</a>
             <a href="../medida/medida.html">Medidas</a>
             <a href="../usuario/usuario.html">Usuários</a>
+            <a href="../pedido/pedido.html">Pedidos</a>
             <a href="../cliente/cliente.html">Ver loja</a>
             <a href="#" id="btnSair" class="nav-sair">Sair</a>
         </nav>
@@ -30,6 +31,7 @@
                 <div class="resumo-item"><strong id="qtdCategorias">–</strong><span>Categorias</span></div>
                 <div class="resumo-item"><strong id="qtdMedidas">–</strong><span>Medidas</span></div>
                 <div class="resumo-item"><strong id="qtdUsuarios">–</strong><span>Usuários</span></div>
+                <div class="resumo-item"><strong id="qtdPedidos">–</strong><span>Pedidos</span></div>
             </div>
 
             <h2>Gerenciar</h2>
@@ -54,6 +56,30 @@
                     <h2>Usuários</h2>
                     <p>Clientes e funcionários do sistema.</p>
                 </a>
+                <a href="../pedido/pedido.html" class="card-menu">
+                    <div class="card-icon">🧾</div>
+                    <h2>Pedidos</h2>
+                    <p>Veja todos os pedidos realizados pelos clientes.</p>
+                </a>
+            </div>
+
+            <h2 style="margin-top: 2.2rem;">Pedidos registrados</h2>
+            <div style="overflow-x: auto; background: #fff; border-radius: 14px; padding: 1rem 1.2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.05);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #eee;">
+                            <th style="padding: 10px 8px;"># Pedido</th>
+                            <th style="padding: 10px 8px;">Data</th>
+                            <th style="padding: 10px 8px;">Cliente (CPF)</th>
+                            <th style="padding: 10px 8px;">Itens</th>
+                            <th style="padding: 10px 8px;">Pagamento</th>
+                            <th style="padding: 10px 8px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaPedidosAdmin">
+                        <tr><td colspan="6" style="padding: 12px 8px;">Carregando pedidos...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
